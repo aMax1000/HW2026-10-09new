@@ -28,6 +28,7 @@ static long long stringtoint(string a) {
         ret *= 10;
         ret += chartoint(a[i]);
     }
+    return ret;
 }
 
 
@@ -40,7 +41,8 @@ union U {
 enum EnumU {
     INT,
     DOUBLE,
-    STRING
+    STRING,
+    MAX
 };
 
 
@@ -73,26 +75,58 @@ public:
     void Show() {
         cout << *this<<endl;
     }
-
+    Var operator+(int a) {
+        switch (this->e) {
+        case INT:
+            return this->un.l + a;
+        case DOUBLE:
+            return this->un.d + a;
+        case STRING:
+            return stringtoint(*this->un.s) + a;
+        }
+    }
     Var operator+(long long a) {
         switch (this->e) {
         case INT:
-            os << a.un.l;
-            break;
+            return this->un.l+a;
         case DOUBLE:
-            os << a.un.d;
-            break;
+            return this->un.d + a;
         case STRING:
-            os << *(a.un.s);
-            break;
+            return stringtoint(*this->un.s) + a;
+        }
+    }
+    Var operator+(double a) {
+        switch (this->e) {
+        case INT:
+            return this->un.l + a;
+        case DOUBLE:
+            return this->un.d + a;
+        case STRING:
+            return stringtoint(*this->un.s) + a;
+        }
+    }
+    Var operator+(string a) {
+        switch (e) {
+        case INT:
+            return un.l + stringtoint(a);
+        case DOUBLE:
+            return un.d+ stringtoint(a);
+        case STRING:
+            return *(un.s) + a;
         }
     }
 
 
     Var operator+(Var a) {
-        if (a.e == STRING and this->e == STRING) goto skip;
-        if (a.e == STRING) return stringtoint(*a.un.s) + this->un;
-        skip:
+        if (a.e == STRING and e == STRING) return (*a.un.s)+(*un.s);
+        if (a.e == STRING) return *this + stringtoint(*a.un.s);
+        if (e == STRING) return a + stringtoint(*un.s);
+        switch (a.e) {
+        case (DOUBLE):
+            return *this+a.un.d;
+        case (INT):
+            return *this+a.un.l;
+        }
     }
 
 
@@ -118,11 +152,17 @@ int main()
     Var a1=42;
     Var a2 = 37.69;
     Var a3= (Var)"Hello World";
-    cout << a1 << a2 << a3;
+    cout << a1 << a2 << a3<<endl;
+    cout << (a1 + 1)<<' '<< (a1 + 2.1)<<' '<< (a1 + "s")<<endl;
+    cout << (a2 + 1) << ' ' << (a2 + 2.1) << ' ' << (a2 + "s") << endl;
+    cout << (a3 + 1) << ' ' << (a3 + 2.1) << ' ' << (a3 + "s") << endl;
+    cout << (a1 + a1) << ' ' << (a1 + a2) << ' ' << (a1 + a3) << endl;
+    cout << (a2 + a1) << ' ' << (a2 + a2) << ' ' << (a2 + a3) << endl;
+    cout << (a3 + a1) << ' ' << (a3 + a2) << ' ' << (a3 + a3) << endl;
 }
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
+// Run program: Ctrl + F5 or MAX > Start Without MAXging menu
+// MAX program: F5 or MAX > Start MAXging menu
 
 // Tips for Getting Started: 
 //   1. Use the Solution Explorer window to add/manage files
